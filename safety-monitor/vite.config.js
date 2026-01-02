@@ -1,48 +1,24 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
-import { resolve } from 'path'; // Import path to be precise
+// import { VitePWA } from 'vite-plugin-pwa'; // Commented out to force deploy
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// --- FIX FOR __dirname IN ES MODULES ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [
     react(),
-    VitePWA({
-      registerType: 'autoUpdate',
-      devOptions: {
-        enabled: false
-      },
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-      manifest: {
-        name: 'FireAlert NX Safety Monitor',
-        short_name: 'FireAlertNX',
-        description: 'Industrial IoT Safety Dashboard',
-        theme_color: '#1f2937',
-        background_color: '#1f2937',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
-      }
-    })
+    // VitePWA({...}) // Commented out to prevent build error
   ],
   // --- EXPLICIT BUILD CONFIGURATION ---
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'), // <--- FORCE THIS PATH
+        // Forces Vite to look for index.html in the current folder
+        main: path.resolve(__dirname, 'index.html'), 
       },
     },
   },
