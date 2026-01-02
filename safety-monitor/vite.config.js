@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { resolve } from 'path'; // Import path to be precise
 
 export default defineConfig({
   plugins: [
@@ -8,7 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       devOptions: {
-        enabled: false // Disable PWA in dev to prevent caching issues
+        enabled: false
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
@@ -37,13 +38,20 @@ export default defineConfig({
       }
     })
   ],
-  // --- RESTORED PROXY CONFIGURATION ---
+  // --- EXPLICIT BUILD CONFIGURATION ---
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'), // <--- FORCE THIS PATH
+      },
+    },
+  },
   server: {
-    host: true, // This allows external access
+    host: true,
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://thingsboard.cloud', // <--- CHECK THIS URL. Change to 'https://demo.thingsboard.io' if needed.
+        target: 'https://thingsboard.cloud',
         changeOrigin: true,
         secure: false,
       },
