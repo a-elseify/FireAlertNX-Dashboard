@@ -39,9 +39,9 @@ const Sidebar = ({ isExpanded, toggleExpanded, closeDrawer, activeTab, setActive
            {isExpanded && (
             <div className="flex items-center">
                 <img 
-                  src={import.meta.env.BASE_URL + "Logo.png"} 
-                  alt="FireAlertNX" 
-                  className="w-8 h-8 mr-2" 
+                    src="/Logo.png"  // Just use /filename if it's in the public folder
+                    alt="FireAlertNX" 
+                    className="w-8 h-8 mr-2" 
                 />
                 <span className="text-xl font-bold text-orange-600 tracking-tighter whitespace-nowrap">
                     FireAlert<span className="text-base-content">NX</span>

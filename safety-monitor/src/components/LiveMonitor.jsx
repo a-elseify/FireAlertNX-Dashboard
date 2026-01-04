@@ -1,9 +1,25 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+// Import the checkmark icon
+import { CheckCircle } from 'lucide-react';
 
-const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeOptions, thresholds, theme }) => {
+// REMOVED 'thresholds' from props
+const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeOptions, theme }) => {
   return (
     <>
+        {/* DYNAMIC STATUS BAR */}
+        {sensorData.p_fire > 0.5 ? (
+            <div className="w-full bg-red-600 text-white p-4 rounded-lg flex items-center gap-3 font-bold uppercase mb-6 shadow-sm animate-pulse">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <span className="text-lg">CRITICAL HAZARD DETECTED</span>
+            </div>
+        ) : (
+            <div className="w-full bg-green-500 text-white p-4 rounded-lg flex items-center gap-3 font-bold uppercase mb-6 shadow-sm">
+                <CheckCircle size={24} className="text-white" />
+                <span className="text-lg">NORMAL</span>
+            </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* 1. THERMAL HEAT (Now displaying p_fire) */}
             <StatusCard 
@@ -12,16 +28,16 @@ const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeO
                 limit="" 
                 borderColor="border-blue-500"
                 textColor="text-blue-500"
-                progressColor="progress-info" // Fixed class name for daisyUI
+                progressColor="progress-info" 
                 progress={sensorData.temp} 
-                max={1} // Adjusted max since p_fire is small (0.16)
+                max={1} 
             />
 
-            {/* 2. GAS LEVELS (Now displaying gas) */}
+            {/* 2. GAS LEVELS (Now displaying mq9_v) */}
             <StatusCard 
                 title="GAS LEVELS" 
                 value={sensorData.gas} 
- 
+                limit=""
                 borderColor="border-yellow-500"
                 textColor="text-yellow-500"
                 progressColor="progress-warning" 
@@ -33,7 +49,7 @@ const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeO
             <StatusCard 
                 title="Fire Status" 
                 value={sensorData.p_fire > 0 ? "FIRE LIKELY" : "NORMAL"} 
-                
+                limit="" 
                 borderColor="border-red-500"
                 textColor="text-red-500"
                 isDigital={true} 
