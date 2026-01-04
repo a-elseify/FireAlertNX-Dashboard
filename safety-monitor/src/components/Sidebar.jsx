@@ -38,7 +38,11 @@ const Sidebar = ({ isExpanded, toggleExpanded, closeDrawer, activeTab, setActive
         <div className={`flex items-center gap-0 overflow-hidden transition-all duration-300 ${isExpanded ? 'w-auto' : 'w-0 opacity-0'}`}>
            {isExpanded && (
             <div className="flex items-center">
-                <img src="/Logo.png" alt="Logo" className="w-8 h-8 object-contain mr-2" />
+                <img 
+                  src={import.meta.env.BASE_URL + "Logo.png"} 
+                  alt="FireAlertNX" 
+                  className="w-8 h-8 mr-2" 
+                />
                 <span className="text-xl font-bold text-orange-600 tracking-tighter whitespace-nowrap">
                     FireAlert<span className="text-base-content">NX</span>
                 </span>

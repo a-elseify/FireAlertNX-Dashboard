@@ -5,23 +5,23 @@ const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeO
   return (
     <>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* 1. THERMAL HEAT - Blue */}
+            {/* 1. THERMAL HEAT (Now displaying p_fire) */}
             <StatusCard 
-                title="THERMAL HEAT" 
-                value={`${sensorData.temp}°C`} 
-                limit={`Threshold: ${thresholds.temp}°C`} 
+                title="Fire Probability" 
+                value={`${sensorData.temp}`} 
+                limit="" 
                 borderColor="border-blue-500"
                 textColor="text-blue-500"
-                progressColor="text-blue-500" 
+                progressColor="progress-info" // Fixed class name for daisyUI
                 progress={sensorData.temp} 
-                max={100} 
+                max={1} // Adjusted max since p_fire is small (0.16)
             />
 
-            {/* 2. GAS LEVELS - Yellow */}
+            {/* 2. GAS LEVELS (Now displaying gas) */}
             <StatusCard 
                 title="GAS LEVELS" 
                 value={sensorData.gas} 
-                limit={`Threshold: ${thresholds.gas} PPM`} 
+ 
                 borderColor="border-yellow-500"
                 textColor="text-yellow-500"
                 progressColor="progress-warning" 
@@ -29,11 +29,11 @@ const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeO
                 max={1000} 
             />
 
-            {/* 3. FIRE SENSOR - Red */}
+            {/* 3. FIRE SENSOR (Now displaying ai_label) */}
             <StatusCard 
-                title="FIRE SENSOR" 
+                title="Fire Status" 
                 value={sensorData.p_fire > 0 ? "FIRE LIKELY" : "NORMAL"} 
-                limit="Digital IR" 
+                
                 borderColor="border-red-500"
                 textColor="text-red-500"
                 isDigital={true} 
@@ -42,7 +42,7 @@ const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeO
         </div>
 
         {/* Chart Section */}
-        <div className="card bg-base-100 shadow-xl">
+        <div className="card bg-base-100 shadow-xl mt-6">
             <div className="card-body p-4 md:p-6">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="card-title text-sm opacity-70">REAL-TIME TRENDS</h2>
@@ -55,7 +55,7 @@ const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeO
                         <LineChart data={liveHistory.filter(pt => pt.rawTime > liveHistory[liveHistory.length - 1]?.rawTime - viewWindow)}>
                             <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                             
-                            {/* UPDATED: Fixed numbers using numeric axis and dataMin/Max */}
+                            {/* Auto Domain so the small p_fire (0.16) isn't flattened */}
                             <XAxis 
                                 dataKey="rawTime" 
                                 type="number" 
@@ -65,15 +65,17 @@ const LiveMonitor = ({ sensorData, liveHistory, viewWindow, setViewWindow, timeO
                                 tickFormatter={(unixTime) => new Date(unixTime).toLocaleTimeString([], { hour12: false })}
                             />
                             
-                            <YAxis stroke="currentColor" tick={{fontSize: 12}} />
+                            <YAxis stroke="currentColor" tick={{fontSize: 12}} domain={['auto', 'auto']} />
                             
-                            {/* UPDATED: Added labelFormatter so tooltip shows readable time */}
                             <Tooltip 
                                 contentStyle={{ backgroundColor: theme === 'dark' ? '#1f2937' : '#fff', color: theme === 'dark' ? '#fff' : '#000' }} 
                                 labelFormatter={(t) => new Date(t).toLocaleTimeString()}
                             />
                             
+                            {/* Blue Line = p_fire (Thermal) */}
                             <Line type="monotone" dataKey="temp" stroke="#3b82f6" strokeWidth={3} dot={false} /> 
+                            
+                            {/* Yellow Line = Gas */}
                             <Line type="monotone" dataKey="gas" stroke="#eab308" strokeWidth={3} dot={false} /> 
                         </LineChart>
                     </ResponsiveContainer>
